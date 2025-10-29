@@ -75,6 +75,8 @@ exports.menuMessage = (groupJid) => {
 ▢
 ▢ • ${prefix}attp
 ▢ • ${prefix}cep
+▢ • ${prefix}criar-fig
+▢ • ${prefix}criar-gif
 ▢ • ${prefix}exemplos-de-mensagens
 ▢ • ${prefix}fake-chat
 ▢ • ${prefix}gerar-link

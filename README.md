@@ -399,6 +399,8 @@ exports.SPIDER_API_TOKEN = "seu_token_aqui";
 | Canvas inverter | Membro | ✅ |
 | Canvas RIP | Membro | ✅ |
 | Comandos de diversão/brincadeiras | Membro |❌ |
+| Criar figurinha do Pinterest | Membro | ✅ |
+| Criar figurinha GIF do Pinterest | Membro | ✅ |
 | Espelhar imagem | Membro | ❌ |
 | Fake chat | Membro | ❌ |
 | Figurinha de texto animada | Membro | ✅ |
