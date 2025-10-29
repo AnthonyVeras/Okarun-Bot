@@ -1,22 +1,25 @@
 const { PREFIX } = require(`${BASE_DIR}/config`);
-const { download } = require(`${BASE_DIR}/services/spider-x-api`);
-const { WarningError, InvalidParameterError } = require(`${BASE_DIR}/errors`);
+const { downloadTiktokVideo, cleanupFile } = require(`${BASE_DIR}/services/tiktokService`);
+const { InvalidParameterError } = require(`${BASE_DIR}/errors`);
+const fs = require("fs");
 
 module.exports = {
   name: "tik-tok",
   description: "Faço o download de vídeos do TikTok",
   commands: ["tik-tok", "ttk"],
-  usage: `${PREFIX}tik-tok https://www.tiktok.com/@yrrefutavel/video/7359413022483287301`,
+  usage: `${PREFIX}tik-tok https://www.tiktok.com/@usuario/video/123456789`,
   /**
    * @param {CommandHandleProps} props
    * @returns {Promise<void>}
    */
   handle: async ({
-    sendVideoFromURL,
-    fullArgs,
+    socket,
+    remoteJid,
+    webMessage,
     sendWaitReact,
     sendSuccessReact,
     sendErrorReply,
+    fullArgs,
   }) => {
     if (!fullArgs.length) {
       throw new InvalidParameterError("Você precisa enviar uma URL do TikTok!");
@@ -24,24 +27,44 @@ module.exports = {
 
     await sendWaitReact();
 
-    if (!fullArgs.includes("tiktok")) {
-      throw new WarningError("O link não é do TikTok!");
-    }
+    let filePath = null;
 
     try {
-      const data = await download("tik-tok", fullArgs);
+      // Baixar vídeo do TikTok
+      const result = await downloadTiktokVideo(fullArgs);
+      filePath = result.filePath;
 
-      if (!data) {
-        await sendErrorReply("Nenhum resultado encontrado!");
-        return;
-      }
+      // Ler arquivo
+      const videoBuffer = fs.readFileSync(filePath);
+
+      // Enviar vídeo com configurações para manter qualidade HD
+      await socket.sendMessage(
+        remoteJid,
+        {
+          video: videoBuffer,
+          caption: "🎬 *TikTok Video*\n\n✅ Download concluído com sucesso!",
+          gifPlayback: false, // Desabilita reprodução como GIF (mantém como vídeo)
+          ptv: false, // Desabilita Picture-in-Picture
+        },
+        { 
+          quoted: webMessage,
+          // Configurações adicionais para melhor qualidade
+          mediaUploadTimeoutMs: 120000, // 2 minutos de timeout para upload
+        }
+      );
 
       await sendSuccessReact();
-
-      await sendVideoFromURL(data.download_link);
     } catch (error) {
-      console.log(error);
-      await sendErrorReply(error.message);
+      console.error("[TIKTOK] Erro:", error);
+      await sendErrorReply(
+        `❌ *Erro ao baixar vídeo do TikTok!*\n\n${error.message}`
+      );
+    } finally {
+      // Limpar arquivo temporário
+      if (filePath) {
+        cleanupFile(filePath);
+        filePath = null;
+      }
     }
   },
 };
