@@ -93,13 +93,14 @@ exports.menuMessage = (groupJid) => {
 
 ╭━━⪩ DOWNLOADS ⪨━━
 ▢
+▢ • ${prefix}instagram
 ▢ • ${prefix}play-audio
 ▢ • ${prefix}play-video
 ▢ • ${prefix}tik-tok
 ▢ • ${prefix}yt-mp3
 ▢ • ${prefix}yt-mp4
 ▢
-╰━━─「🎶」─━━
+╰━━─「📥」─━━
 
 ╭━━⪩ BRINCADEIRAS ⪨━━
 ▢
